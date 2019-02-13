@@ -173,6 +173,7 @@ void MyMesh::AddQuad(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vT
 	AddVertexPosition(a_vBottomRight);
 	AddVertexPosition(a_vTopRight);
 }
+//completed bt Aberto
 void MyMesh::GenerateCube(float a_fSize, vector3 a_v3Color)
 {
 	if (a_fSize < 0.01f)
@@ -259,6 +260,8 @@ void MyMesh::GenerateCuboid(vector3 a_v3Dimensions, vector3 a_v3Color)
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
+//-------------------------------------------------------
+//complete
 void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color)
 {
 	if (a_fRadius < 0.01f)
@@ -275,14 +278,23 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 point1(0.0f, 0.0f, 0.0f);
+		vector3 point2(cos(i * 2 * PI / a_nSubdivisions) * a_fRadius, sin(i * 2 * PI / a_nSubdivisions)* a_fRadius, 0.0f);
+		vector3 point3(cos((i + 1) * 2 * PI / a_nSubdivisions)  * a_fRadius, sin((i + 1) * 2 * PI / a_nSubdivisions) * a_fRadius, 0.0f);
+
+		vector3 point4(0.0f, 0.0f, -a_fHeight);
+
+		AddTri(point1, point2, point3);
+		AddTri(point4, point3, point2);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
+//complete
 void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color)
 {
 	if (a_fRadius < 0.01f)
@@ -299,14 +311,27 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 point1(0.0f, 0.0f, 0.0f);
+		vector3 point2(cos(i * 2 * PI / a_nSubdivisions) * a_fRadius, sin(i * 2 * PI / a_nSubdivisions)* a_fRadius, 0.0f);
+		vector3 point3(cos((i + 1) * 2 * PI / a_nSubdivisions)  * a_fRadius, sin((i + 1) * 2 * PI / a_nSubdivisions) * a_fRadius, 0.0f);
+
+		vector3 point4(0.0f, 0.0f, -a_fHeight);
+		vector3 point5(cos(i * 2 * PI / a_nSubdivisions) * a_fRadius, sin(i * 2 * PI / a_nSubdivisions)* a_fRadius, -a_fHeight);
+		vector3 point6(cos((i + 1) * 2 * PI / a_nSubdivisions)  * a_fRadius, sin((i + 1) * 2 * PI / a_nSubdivisions) * a_fRadius, -a_fHeight);
+
+
+		AddTri(point1, point2, point3);
+		AddTri(point4, point6, point5);
+		AddQuad(point3, point2, point6, point5);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
+//incomplete
 void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color)
 {
 	if (a_fOuterRadius < 0.01f)
@@ -337,6 +362,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
+//incomplete
 void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSubdivisionsA, int a_nSubdivisionsB, vector3 a_v3Color)
 {
 	if (a_fOuterRadius < 0.01f)
@@ -369,6 +395,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
+//incomplete
 void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
 {
 	if (a_fRadius < 0.01f)

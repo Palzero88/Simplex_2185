@@ -37,7 +37,7 @@ void Application::Display(void)
 	//translation for movement
 	matrix4 m4TranslateMove = glm::translate(IDENTITY_M4, vector3(value, 2.0f, 3.0f));
 
-	//increment movement
+	//increment movement back and forth
 	if (moveR)
 	{
 		value += 0.5f;
