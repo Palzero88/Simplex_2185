@@ -173,7 +173,7 @@ void MyMesh::AddQuad(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vT
 	AddVertexPosition(a_vBottomRight);
 	AddVertexPosition(a_vTopRight);
 }
-//completed bt Aberto
+//completed by Aberto
 void MyMesh::GenerateCube(float a_fSize, vector3 a_v3Color)
 {
 	if (a_fSize < 0.01f)
@@ -354,9 +354,34 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//outer points
+		vector3 point1(0.0f, 0.0f, 0.0f);
+		vector3 point2(cos(i * 2 * PI / a_nSubdivisions) * a_fOuterRadius, sin(i * 2 * PI / a_nSubdivisions)* a_fOuterRadius, 0.0f);
+		vector3 point3(cos((i + 1) * 2 * PI / a_nSubdivisions)  * a_fOuterRadius, sin((i + 1) * 2 * PI / a_nSubdivisions) * a_fOuterRadius, 0.0f);
+
+		vector3 point4(0.0f, 0.0f, -a_fHeight);
+		vector3 point5(cos(i * 2 * PI / a_nSubdivisions) * a_fOuterRadius, sin(i * 2 * PI / a_nSubdivisions)* a_fOuterRadius, -a_fHeight);
+		vector3 point6(cos((i + 1) * 2 * PI / a_nSubdivisions)  * a_fOuterRadius, sin((i + 1) * 2 * PI / a_nSubdivisions) * a_fOuterRadius, -a_fHeight);
+
+		//inner points
+		vector3 i_point1(0.0f, 0.0f, 0.0f);
+		vector3 i_point2(cos(i * 2 * PI / a_nSubdivisions) * a_fInnerRadius, sin(i * 2 * PI / a_nSubdivisions)* a_fInnerRadius, 0.0f);
+		vector3 i_point3(cos((i + 1) * 2 * PI / a_nSubdivisions)  * a_fInnerRadius, sin((i + 1) * 2 * PI / a_nSubdivisions) * a_fInnerRadius, 0.0f);
+
+		vector3 i_point4(0.0f, 0.0f, -a_fHeight);
+		vector3 i_point5(cos(i * 2 * PI / a_nSubdivisions) * a_fInnerRadius, sin(i * 2 * PI / a_nSubdivisions)* a_fInnerRadius, -a_fHeight);
+		vector3 i_point6(cos((i + 1) * 2 * PI / a_nSubdivisions)  * a_fInnerRadius, sin((i + 1) * 2 * PI / a_nSubdivisions) * a_fInnerRadius, -a_fHeight);
+
+		//outer faces
+		AddTri(point1, point2, point3);
+		AddTri(point4, point6, point5);
+		AddQuad(point3, point2, point6, point5);
+
+		//inner faces
+		
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -413,9 +438,17 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	for (int i = 0; i < a_fRadius; i=(a_fRadius/a_nSubdivisions)*(i++))
+	{
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			vector3 point1(0.0f, 0.0f, 0.0f);
+			vector3 point2(cos(j * 2 * PI / a_nSubdivisions) * a_fRadius, sin(j * 2 * PI / a_nSubdivisions)* a_fRadius, 0.0f);
+			vector3 point3(cos((j + 1) * 2 * PI / a_nSubdivisions)  * a_fRadius, sin((j + 1) * 2 * PI / a_nSubdivisions) * a_fRadius, 0.0f);
+
+			AddTri(point1, point2, point3);
+		}
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
