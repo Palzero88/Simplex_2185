@@ -434,13 +434,52 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		GenerateCube(a_fRadius * 2.0f, a_v3Color);
 		return;
 	}
-	if (a_nSubdivisions > 6)
-		a_nSubdivisions = 6;
+	if (a_nSubdivisions > 10)
+		a_nSubdivisions = 10;
 
 	Release();
 	Init();
 
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+#pragma region
+		//first circle
+		vector3 point1(0.0f, 0.0f, 0.0f);
+		vector3 point2(cos(i * 2 * PI / a_nSubdivisions) * a_fRadius, sin(i * 2 * PI / a_nSubdivisions)* a_fRadius, 0.0f);
+		vector3 point3(cos((i + 1) * 2 * PI / a_nSubdivisions)  * a_fRadius, sin((i + 1) * 2 * PI / a_nSubdivisions) * a_fRadius, 0.0f);
+
+		//poles
+		vector3 point4(0.0f, 0.0f, -a_fRadius);
+		vector3 point5(0.0f, 0.0f, a_fRadius);
+
+		//first circle band
+		AddTri(point1, point2, point3);
+
+		//faces top1
+		AddTri(((point5 + point3) / 2)*(a_fRadius/glm::length((point5 + point3) / 2)), point3, ((point2 + point3) / 2)*(a_fRadius / glm::length((point2 + point3) / 2)));
+		AddTri(((point5 + point3) / 2)*(a_fRadius / glm::length((point5 + point3) / 2)), ((point2 + point5) / 2)*(a_fRadius / glm::length((point2 + point5) / 2)), point5);
+		AddTri(((point5 + point3) / 2)*(a_fRadius / glm::length((point5 + point3) / 2)), ((point2 + point3) / 2)*(a_fRadius / glm::length((point2 + point3) / 2)), ((point2 + point5) / 2)*(a_fRadius / glm::length((point2 + point5) / 2)));
+		AddTri(((point5 + point2) / 2)*(a_fRadius / glm::length((point5 + point2) / 2)), ((point2 + point3) / 2)*(a_fRadius / glm::length((point2 + point3) / 2)), point2);
+
+		//faces bot1
+		AddTri(((point4 + point3) / 2)*(a_fRadius / glm::length((point4 + point3) / 2)), point3, ((point2 + point3) / 2)*(a_fRadius / glm::length((point2 + point3) / 2)));
+		AddTri(((point4 + point3) / 2)*(a_fRadius / glm::length((point4 + point3) / 2)), ((point2 + point4) / 2)*(a_fRadius / glm::length((point2 + point4) / 2)), point4);
+		AddTri(((point4 + point3) / 2)*(a_fRadius / glm::length((point4 + point3) / 2)), ((point2 + point3) / 2)*(a_fRadius / glm::length((point2 + point3) / 2)), ((point2 + point4) / 2)*(a_fRadius / glm::length((point2 + point4) / 2)));
+		AddTri(((point4 + point2) / 2)*(a_fRadius / glm::length((point4 + point2) / 2)), ((point2 + point3) / 2)*(a_fRadius / glm::length((point2 + point3) / 2)), point2);
+
+		//faces top2
+		AddTri(((point5 + point2) / 2)*(a_fRadius / glm::length((point5 + point2) / 2)), point2, ((point3 + point2) / 2)*(a_fRadius / glm::length((point3 + point2) / 2)));
+		AddTri(((point5 + point2) / 2)*(a_fRadius / glm::length((point5 + point2) / 2)), ((point3 + point5) / 2)*(a_fRadius / glm::length((point3 + point5) / 2)), point5);
+		AddTri(((point5 + point2) / 2)*(a_fRadius / glm::length((point5 + point2) / 2)), ((point3 + point2) / 2)*(a_fRadius / glm::length((point3 + point2) / 2)), ((point3 + point5) / 2)*(a_fRadius / glm::length((point3 + point5) / 2)));
+		AddTri(((point5 + point3) / 2)*(a_fRadius / glm::length((point5 + point3) / 2)), ((point3 + point2) / 2)*(a_fRadius / glm::length((point3 + point2) / 2)), point3);
+
+		//faces bot2
+		AddTri(((point4 + point2) / 2)*(a_fRadius / glm::length((point4 + point2) / 2)), point2, ((point3 + point2) / 2)*(a_fRadius / glm::length((point3 + point2) / 2)));
+		AddTri(((point4 + point2) / 2)*(a_fRadius / glm::length((point4 + point2) / 2)), ((point3 + point4) / 2)*(a_fRadius / glm::length((point3 + point4) / 2)), point4);
+		AddTri(((point4 + point2) / 2)*(a_fRadius / glm::length((point4 + point2) / 2)), ((point3 + point2) / 2)*(a_fRadius / glm::length((point3 + point2) / 2)), ((point3 + point4) / 2)*(a_fRadius / glm::length((point3 + point4) / 2)));
+		AddTri(((point4 + point3) / 2)*(a_fRadius / glm::length((point4 + point3) / 2)), ((point3 + point2) / 2)*(a_fRadius / glm::length((point3 + point2) / 2)), point3);
+#pragma endregion		
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
