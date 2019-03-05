@@ -12,7 +12,7 @@ namespace Simplex
 
 class MyCamera
 {
-	vector3 m_v3Position = vector3(0.0f, 0.0f, 10.0f); //Where my camera is located
+	vector3 m_v3Position = vector3(0.0f, 0.0f, 0.0f); //Where my camera is located
 	vector3 m_v3Target = vector3(0.0f, 0.0f, 0.0f); //What I'm looking at
 	vector3 m_v3Above = vector3(0.0f, 1.0f, 0.0f); //What is above the camera
 
@@ -28,6 +28,9 @@ class MyCamera
 
 	matrix4 m_m4View; //View matrix
 	matrix4 m_m4Projection; //Projection Matrix
+
+	quaternion m_qOrientation = glm::angleAxis(glm::radians(0.0f), vector3(0.0f, 0.0f, 0.0f)); //base orientation
+
 public:
 	/*
 	USAGE: Constructor
@@ -230,6 +233,10 @@ public:
 	OUTPUT: ---
 	*/
 	void MoveSideways(float a_fDistance = 0.1f);
+
+	//these are definitions for the quaternion functions I called in the controls class
+	void SetYaw(quaternion o);
+	void SetPitch(quaternion o);
 };
 
 } //namespace Simplex

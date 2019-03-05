@@ -131,8 +131,8 @@ void Simplex::MyCamera::SetPositionTargetAndUpward(vector3 a_v3Position, vector3
 
 void Simplex::MyCamera::CalculateViewMatrix(void)
 {
-	//Calculate the look at most of your assignment will be reflected in this method
-	m_m4View = glm::lookAt(m_v3Position, m_v3Target, glm::normalize(m_v3Above - m_v3Position)); //position, target, upward
+	//The position and target are multiplied by the quaternion
+	m_m4View = glm::toMat4(m_qOrientation)*(glm::lookAt(m_v3Position, m_v3Target, glm::normalize(m_v3Above - m_v3Position))); //position, target, upward
 }
 
 void Simplex::MyCamera::CalculateProjectionMatrix(void)
@@ -153,10 +153,33 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 void MyCamera::MoveForward(float a_fDistance)
 {
 	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance)*m_qOrientation;
+	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance)*m_qOrientation;
+	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance)*m_qOrientation;
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
-void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined
+//operates exactly like the z axis example, this just increments the y-axis instead. It also multiplied by the quaternion orientation so it stays camera centered.
+void MyCamera::MoveVertical(float a_fDistance)
+{
+	m_v3Position += vector3(0.0f, -a_fDistance, 0.0f)*m_qOrientation;
+	m_v3Target += vector3(0.0f, -a_fDistance, 0.0f)*m_qOrientation;
+	m_v3Above += vector3(0.0f, -a_fDistance, 0.0f)*m_qOrientation;
+}
+//operates exactly like the z axis example, this just increments the x-axis instead. It also multiplied by the quaternion orientation so it stays camera centered.
+void MyCamera::MoveSideways(float a_fDistance)
+{
+	m_v3Position += vector3(-a_fDistance, 0.0f, 0.0f)*m_qOrientation;
+	m_v3Target += vector3(-a_fDistance, 0.0f, 0.0f)*m_qOrientation;
+	m_v3Above += vector3(-a_fDistance, 0.0f, 0.0f)*m_qOrientation;
+}
+
+//These functions update the quaternion by the one that is calculated in the control class.
+//In hindsite only one was required, but whatever I guess.
+void MyCamera::SetYaw(quaternion o)
+{
+	m_qOrientation = m_qOrientation * o;
+}
+void MyCamera::SetPitch(quaternion o)
+{
+	m_qOrientation = m_qOrientation * o;
+}

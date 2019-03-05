@@ -347,28 +347,47 @@ void Application::CameraRotation(float a_fSpeed)
 	float fAngleX = 0.0f;
 	float fAngleY = 0.0f;
 	float fDeltaMouse = 0.0f;
+
+
+	//each of these are the quaternion calculations required for rotation. Thet are static because I think that makes sense
+	//and it works like a charm. They are updated inside the below control functions.
+	static quaternion xQ = glm::angleAxis(glm::radians(1.0f), vector3(1.0f, 0.0f, 0.0f));
+	static quaternion yQ = glm::angleAxis(glm::radians(1.0f), vector3(0.0f, 1.0f, 0.0f));
+
+
 	if (MouseX < CenterX)
 	{
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);
 		fAngleY += fDeltaMouse * a_fSpeed;
+		//rotates around Y
+		xQ = glm::angleAxis(glm::radians(fAngleY*2.0f), vector3(0.0f, 1.0f, 0.0f));
+		m_pCamera->SetPitch(xQ);
 	}
 	else if (MouseX > CenterX)
 	{
 		fDeltaMouse = static_cast<float>(MouseX - CenterX);
 		fAngleY -= fDeltaMouse * a_fSpeed;
+		//rotates around Y
+		xQ = glm::angleAxis(glm::radians(fAngleY*2.0f), vector3(0.0f, 1.0f, 0.0f));
+		m_pCamera->SetPitch(xQ);
 	}
 
 	if (MouseY < CenterY)
 	{
 		fDeltaMouse = static_cast<float>(CenterY - MouseY);
 		fAngleX -= fDeltaMouse * a_fSpeed;
+		//rotates around X
+		yQ = glm::angleAxis(glm::radians(fAngleX*2.0f), vector3(1.0f, 0.0f, 0.0f));
+		m_pCamera->SetYaw(yQ);
 	}
 	else if (MouseY > CenterY)
 	{
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
 		fAngleX += fDeltaMouse * a_fSpeed;
+		//rotates around X
+		yQ = glm::angleAxis(glm::radians(fAngleX*2.0f), vector3(1.0f, 0.0f, 0.0f));
+		m_pCamera->SetYaw(yQ);
 	}
-	//Change the Yaw and the Pitch of the camera
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
@@ -382,14 +401,30 @@ void Application::ProcessKeyboard(void)
 	float fSpeed = 0.1f;
 	float fMultiplier = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
 		sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
-
+	//This is a "sprint" multiplier when holding shift
 	if (fMultiplier)
 		fSpeed *= 5.0f;
 
+	//moves forward with MoveForward function
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		m_pCamera->MoveForward(fSpeed);
+	//moves backward with MoveForward function
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_pCamera->MoveForward(-fSpeed);
+	//moves Left with MoveSideways function
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		m_pCamera->MoveSideways(fSpeed);
+	//moves Right with MoveSideways function
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		m_pCamera->MoveSideways(-fSpeed);
+	//moves Up with MoveVertical function
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		m_pCamera->MoveVertical(-fSpeed);
+	//moves Down with MoveVertical function
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+		m_pCamera->MoveVertical(fSpeed);
+
+
 #pragma endregion
 }
 //Joystick
