@@ -276,17 +276,102 @@ void MyRigidBody::AddToRenderList(void)
 
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
-	/*
-	Your code goes here instead of this comment;
+	//epsilon value is for margin of error
+	const float EPSILON = 0.01;
+	float ra, rb;
+	matrix3 R, AbsR;
 
-	For this method, if there is an axis that separates the two objects
-	then the return will be different than 0; 1 for any separating axis
-	is ok if you are not going for the extra credit, if you could not
-	find a separating axis you need to return 0, there is an enum in
-	Simplex that might help you [eSATResults] feel free to use it.
-	(eSATResults::SAT_NONE has a value of 0)
-	*/
+	//create arrays of the model maricies for refrence by for loops
+	vector3 a[3] = { GetModelMatrix()[0], GetModelMatrix()[1], GetModelMatrix()[2] };
+	vector3 b[3] = { a_pOther->GetModelMatrix()[0], a_pOther->GetModelMatrix()[1], a_pOther->GetModelMatrix()[2] };
+
+	//vector of the half widths of each axis of A and B
+	vector3 eA[3] = { (GetModelMatrix()[0]), (GetModelMatrix()[1]), (GetModelMatrix()[2]) };
+	vector3 eB[3] = { (a_pOther->GetModelMatrix()[0]), (a_pOther->GetModelMatrix()[1]), (a_pOther->GetModelMatrix()[2]) };
+
+	//makes r the dot product of a and b
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			R[i][j] = glm::dot(a[i], b[j]);
+		}
+	}
+
+	//creates t which serves as a dot product of the centerline between them on all axis
+	vector3 t = a_pOther->m_v3Center - this->m_v3Center;
+	t = vector3(glm::dot(t, a[0]), glm::dot(t, a[1]), glm::dot(t, a[2]));
+
+	//creates an absoloute value version of R with the value of epsilon appened as a margin of error
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			AbsR[i][j] = glm::abs(R[i][j]) + EPSILON;
+		}
+	}
+
+	//test for plane between A x, y, and z
+	for (int i = 0; i < 3; i++)
+	{
+		ra = eA[i].length / 2;
+		rb = (eB[0].length / 2) * (AbsR[i][0]) + (eB[1].length / 2) * (AbsR[i][1]) + (eB[2].length / 2) * (AbsR[i][2]);
+		if (glm::abs(t[i]) > ra + rb) return 0;
+	}
+
+	//test for plane between B x, y, and z
+	for (int i = 0; i < 3; i++)
+	{
+		ra = (eA[0].length / 2) * (AbsR[0][i]) + (eA[1].length / 2) * (AbsR[1][i]) + (eA[2].length / 2) * (AbsR[2][i]);
+		rb = eB[i].length / 2;
+		if (glm::abs(t[0] * R[0][i] + t[1] * R[1][i] + t[2] * R[2][i]) > ra + rb) return 0;
+	}
+
+	//test for plane between X of A and X of B
+	ra = (eA[1].length / 2) * AbsR[2][0] + (eA[2].length / 2) * AbsR[1][0];
+	rb = (eB[1].length / 2) * AbsR[0][2] + (eB[2].length / 2) * AbsR[0][1];
+	if (glm::abs(t[2] * R[1][0] - t[1] * R[2][0]) > ra + rb) return 0;
+
+	//test for plane between X of A and Y of B
+	ra = (eA[1].length / 2) * AbsR[2][1] + (eA[2].length / 2) * AbsR[1][1];
+	rb = (eB[0].length / 2) * AbsR[0][2] + (eB[2].length / 2) * AbsR[0][0];
+	if (glm::abs(t[2] * R[1][1] - t[1] * R[2][1]) > ra + rb) return 0;
+
+	//test for plane between X of A and Z of B
+	ra = (eA[1].length / 2) * AbsR[2][2] + (eA[2].length / 2) * AbsR[1][2];
+	rb = (eB[0].length / 2) * AbsR[0][1] + (eB[1].length / 2) * AbsR[0][0];
+	if (glm::abs(t[2] * R[1][2] - t[1] * R[2][2]) > ra + rb) return 0;
+
+	//test for plane between Y of A and X of B
+	ra = (eA[0].length / 2) * AbsR[2][0] + (eA[2].length / 2) * AbsR[0][0];
+	rb = (eB[1].length / 2) * AbsR[1][2] + (eB[2].length / 2) * AbsR[1][1];
+	if (glm::abs(t[0] * R[2][0] - t[2] * R[0][0]) > ra + rb) return 0;
+
+	//test for plane between Y of A and Y of B
+	ra = (eA[0].length / 2) * AbsR[2][1] + (eA[2].length / 2) * AbsR[0][1];
+	rb = (eB[0].length / 2) * AbsR[1][2] + (eB[2].length / 2) * AbsR[1][0];
+	if (glm::abs(t[0] * R[2][1] - t[2] * R[0][1]) > ra + rb) return 0;
+
+	//test for plane between Y of A and Z of B
+	ra = (eA[0].length / 2) * AbsR[2][2] + (eA[2].length / 2) * AbsR[0][2];
+	rb = (eB[0].length / 2) * AbsR[1][1] + (eB[1].length / 2) * AbsR[1][0];
+	if (glm::abs(t[0] * R[2][2] - t[2] * R[0][2]) > ra + rb) return 0;
+
+	//test for plane between Z of A and X of B
+	ra = (eA[0].length / 2) * AbsR[1][0] + (eA[1].length / 2) * AbsR[0][0];
+	rb = (eB[1].length / 2) * AbsR[2][2] + (eB[2].length / 2) * AbsR[2][1];
+	if (glm::abs(t[1] * R[0][0] - t[0] * R[1][0]) > ra + rb) return 0;
+
+	//test for plane between Z of A and Y of B
+	ra = (eA[0].length / 2) * AbsR[1][1] + (eA[1].length / 2) * AbsR[0][1];
+	rb = (eB[0].length / 2) * AbsR[2][2] + (eB[2].length / 2) * AbsR[2][0];
+	if (glm::abs(t[1] * R[0][1] - t[0] * R[1][1]) > ra + rb) return 0;
+
+	//test for plane between Z of A and Z of B
+	ra = (eA[0].length / 2) * AbsR[1][2] + (eA[1].length / 2) * AbsR[0][2];
+	rb = (eB[0].length / 2) * AbsR[2][1] + (eB[1].length / 2) * AbsR[2][0];
+	if (glm::abs(t[1] * R[0][2] - t[0] * R[1][2]) > ra + rb) return 0;
 
 	//there is no axis test that separates this two objects
-	return eSATResults::SAT_NONE;
+	return 1;
 }
