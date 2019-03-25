@@ -277,17 +277,20 @@ void MyRigidBody::AddToRenderList(void)
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
 	//epsilon value is for margin of error
-	const float EPSILON = 0.01;
+	const float EPSILON = 0.1f;
+
+	//variables that will store values for comparison, dot product, and abs of dot product
 	float ra, rb;
 	matrix3 R, AbsR;
 
 	//create arrays of the model maricies for refrence by for loops
-	vector3 a[3] = { GetModelMatrix()[0], GetModelMatrix()[1], GetModelMatrix()[2] };
+	vector3 a[3] = { this->GetModelMatrix()[0], this->GetModelMatrix()[1], this->GetModelMatrix()[2] };
 	vector3 b[3] = { a_pOther->GetModelMatrix()[0], a_pOther->GetModelMatrix()[1], a_pOther->GetModelMatrix()[2] };
 
 	//vector of the half widths of each axis of A and B
-	vector3 eA[3] = { (GetModelMatrix()[0]), (GetModelMatrix()[1]), (GetModelMatrix()[2]) };
-	vector3 eB[3] = { (a_pOther->GetModelMatrix()[0]), (a_pOther->GetModelMatrix()[1]), (a_pOther->GetModelMatrix()[2]) };
+	float eA[3] = { ((this->m_v3MaxL.x + this->m_v3MinL.x)/2), ((this->m_v3MaxL.y + this->m_v3MinL.y) / 2), ((this->m_v3MaxL.z + this->m_v3MinL.z) / 2) };
+	float eB[3] = { ((a_pOther->m_v3MaxL.x + a_pOther->m_v3MinL.x) / 2), ((a_pOther->m_v3MaxL.y + a_pOther->m_v3MinL.y) / 2), ((a_pOther->m_v3MaxL.z + a_pOther->m_v3MinL.z) / 2) };
+
 
 	//makes r the dot product of a and b
 	for (int i = 0; i < 3; i++)
@@ -299,7 +302,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	}
 
 	//creates t which serves as a dot product of the centerline between them on all axis
-	vector3 t = a_pOther->m_v3Center - this->m_v3Center;
+	vector3 t = a_pOther->GetCenterGlobal() - this->GetCenterGlobal();
 	t = vector3(glm::dot(t, a[0]), glm::dot(t, a[1]), glm::dot(t, a[2]));
 
 	//creates an absoloute value version of R with the value of epsilon appened as a margin of error
@@ -314,64 +317,64 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	//test for plane between A x, y, and z
 	for (int i = 0; i < 3; i++)
 	{
-		ra = eA[i].length / 2;
-		rb = (eB[0].length / 2) * (AbsR[i][0]) + (eB[1].length / 2) * (AbsR[i][1]) + (eB[2].length / 2) * (AbsR[i][2]);
+		ra = eA[i];
+		rb = (eB[0]) * (AbsR[i][0]) + (eB[1]) * (AbsR[i][1]) + (eB[2]) * (AbsR[i][2]);
 		if (glm::abs(t[i]) > ra + rb) return 0;
 	}
 
 	//test for plane between B x, y, and z
 	for (int i = 0; i < 3; i++)
 	{
-		ra = (eA[0].length / 2) * (AbsR[0][i]) + (eA[1].length / 2) * (AbsR[1][i]) + (eA[2].length / 2) * (AbsR[2][i]);
-		rb = eB[i].length / 2;
+		ra = (eA[0]) * (AbsR[0][i]) + (eA[1]) * (AbsR[1][i]) + (eA[2]) * (AbsR[2][i]);
+		rb = eB[i];
 		if (glm::abs(t[0] * R[0][i] + t[1] * R[1][i] + t[2] * R[2][i]) > ra + rb) return 0;
 	}
 
 	//test for plane between X of A and X of B
-	ra = (eA[1].length / 2) * AbsR[2][0] + (eA[2].length / 2) * AbsR[1][0];
-	rb = (eB[1].length / 2) * AbsR[0][2] + (eB[2].length / 2) * AbsR[0][1];
+	ra = (eA[1]) * AbsR[2][0] + (eA[2]) * AbsR[1][0];
+	rb = (eB[1]) * AbsR[0][2] + (eB[2]) * AbsR[0][1];
 	if (glm::abs(t[2] * R[1][0] - t[1] * R[2][0]) > ra + rb) return 0;
 
 	//test for plane between X of A and Y of B
-	ra = (eA[1].length / 2) * AbsR[2][1] + (eA[2].length / 2) * AbsR[1][1];
-	rb = (eB[0].length / 2) * AbsR[0][2] + (eB[2].length / 2) * AbsR[0][0];
+	ra = (eA[1]) * AbsR[2][1] + (eA[2]) * AbsR[1][1];
+	rb = (eB[0]) * AbsR[0][2] + (eB[2]) * AbsR[0][0];
 	if (glm::abs(t[2] * R[1][1] - t[1] * R[2][1]) > ra + rb) return 0;
 
 	//test for plane between X of A and Z of B
-	ra = (eA[1].length / 2) * AbsR[2][2] + (eA[2].length / 2) * AbsR[1][2];
-	rb = (eB[0].length / 2) * AbsR[0][1] + (eB[1].length / 2) * AbsR[0][0];
+	ra = (eA[1]) * AbsR[2][2] + (eA[2]) * AbsR[1][2];
+	rb = (eB[0]) * AbsR[0][1] + (eB[1]) * AbsR[0][0];
 	if (glm::abs(t[2] * R[1][2] - t[1] * R[2][2]) > ra + rb) return 0;
 
 	//test for plane between Y of A and X of B
-	ra = (eA[0].length / 2) * AbsR[2][0] + (eA[2].length / 2) * AbsR[0][0];
-	rb = (eB[1].length / 2) * AbsR[1][2] + (eB[2].length / 2) * AbsR[1][1];
+	ra = (eA[0]) * AbsR[2][0] + (eA[2]) * AbsR[0][0];
+	rb = (eB[1]) * AbsR[1][2] + (eB[2]) * AbsR[1][1];
 	if (glm::abs(t[0] * R[2][0] - t[2] * R[0][0]) > ra + rb) return 0;
 
 	//test for plane between Y of A and Y of B
-	ra = (eA[0].length / 2) * AbsR[2][1] + (eA[2].length / 2) * AbsR[0][1];
-	rb = (eB[0].length / 2) * AbsR[1][2] + (eB[2].length / 2) * AbsR[1][0];
+	ra = (eA[0]) * AbsR[2][1] + (eA[2]) * AbsR[0][1];
+	rb = (eB[0]) * AbsR[1][2] + (eB[2]) * AbsR[1][0];
 	if (glm::abs(t[0] * R[2][1] - t[2] * R[0][1]) > ra + rb) return 0;
 
 	//test for plane between Y of A and Z of B
-	ra = (eA[0].length / 2) * AbsR[2][2] + (eA[2].length / 2) * AbsR[0][2];
-	rb = (eB[0].length / 2) * AbsR[1][1] + (eB[1].length / 2) * AbsR[1][0];
+	ra = (eA[0]) * AbsR[2][2] + (eA[2]) * AbsR[0][2];
+	rb = (eB[0]) * AbsR[1][1] + (eB[1]) * AbsR[1][0];
 	if (glm::abs(t[0] * R[2][2] - t[2] * R[0][2]) > ra + rb) return 0;
 
 	//test for plane between Z of A and X of B
-	ra = (eA[0].length / 2) * AbsR[1][0] + (eA[1].length / 2) * AbsR[0][0];
-	rb = (eB[1].length / 2) * AbsR[2][2] + (eB[2].length / 2) * AbsR[2][1];
+	ra = (eA[0]) * AbsR[1][0] + (eA[1]) * AbsR[0][0];
+	rb = (eB[1]) * AbsR[2][2] + (eB[2]) * AbsR[2][1];
 	if (glm::abs(t[1] * R[0][0] - t[0] * R[1][0]) > ra + rb) return 0;
 
 	//test for plane between Z of A and Y of B
-	ra = (eA[0].length / 2) * AbsR[1][1] + (eA[1].length / 2) * AbsR[0][1];
-	rb = (eB[0].length / 2) * AbsR[2][2] + (eB[2].length / 2) * AbsR[2][0];
+	ra = (eA[0]) * AbsR[1][1] + (eA[1]) * AbsR[0][1];
+	rb = (eB[0]) * AbsR[2][2] + (eB[2]) * AbsR[2][0];
 	if (glm::abs(t[1] * R[0][1] - t[0] * R[1][1]) > ra + rb) return 0;
 
 	//test for plane between Z of A and Z of B
-	ra = (eA[0].length / 2) * AbsR[1][2] + (eA[1].length / 2) * AbsR[0][2];
-	rb = (eB[0].length / 2) * AbsR[2][1] + (eB[1].length / 2) * AbsR[2][0];
+	ra = (eA[0]) * AbsR[1][2] + (eA[1]) * AbsR[0][2];
+	rb = (eB[0]) * AbsR[2][1] + (eB[1]) * AbsR[2][0];
 	if (glm::abs(t[1] * R[0][2] - t[0] * R[1][2]) > ra + rb) return 0;
 
 	//there is no axis test that separates this two objects
-	return 1;
+	return SAT_NONE;
 }
