@@ -28,6 +28,49 @@ class MyOctant
 	std::vector<MyOctant*> m_lChild; //list of nodes that contain objects only the root will have this in a useful way because it contains all children
 
 public:
+	//constructor for root node
+	MyOctant(uint a_nMaxLevel = 2, uint a_nIdealEntityCount = 5);
+
+	//constructor for child nodes of root and children of their children
+	MyOctant(vector3 a_v3Center, float a_fSize);
+
+	//returns size of one length of an octant
 	float GetSize(void);
+
+	//creates 8 octants internally within the parent octant.
+	void Subdivide(void);
+
+	//clears the list of colliding entities
+	void ClearEntityList(void);
+
+	//returns the child for the octant with a specific index
+	MyOctant* GetChild(uint a_nChild);
+
+	//returns the parent of the octant in question
+	MyOctant* GetParent(void);
+
+	//returns true if there are more entities within the octant thatn the ideal count
+	bool ContainsMoreThan(uint a_nEntities);
+
+	//deletes children of an octant
+	void KillBranches(void);
+
+	//get the mind and max corners of the octant. Initial values determined by the min and max of the entities that were created
+	vector3 GetMinGlobal(void);
+	vector3 GetMaxGlobal(void);
+
+	//get the center point of the octant determined by the min and max corners
+	vector3 GetCenterGlobal(void);
+
+	//assigns an ID value to an octant.
+	void AssignIDtoEntity(void);
+
+	//return total octant count
+	uint GetOctantCount(void);
+
+	//displays octant on screen based on index or not
+	void Display(uint a_nIndex, vector3 a_v3Color = C_YELLOW);
+	void Display(vector3 a_v3Color = C_YELLOW);
+	void DisplayLeafs(vector3 a_v3Color = C_YELLOW);
 };
 }
