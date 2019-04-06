@@ -8,8 +8,6 @@ using namespace Simplex;
 void MyOctant::Init(void)
 {
 	m_uOctantCount; //current count of total octant divisions
-	m_uMaxLevel; //max level of divisions allowed
-	m_uIdealEntityCount; //level of entities "within" or colliding with applicable octree
 
 	m_uID = 0; //defines octant by ID number stored as an argument when created
 	m_uLevel = 0; //stores the level of octree it is beginning at zero
@@ -26,21 +24,16 @@ void MyOctant::Init(void)
 
 	m_EntityList; //List of Entities under this octant (Index in Entity Manager)
 
-	m_EntityManager->MyEntityManager::GetInstance;
+	m_EntityManager = MyEntityManager::GetInstance();
+	m_MeshManager = MeshManager::GetInstance();
 
 	m_pRoot = nullptr;//Root octant, this is the firs one that was created
 	m_lChild; //list of nodes that contain objects only the root will have this in a useful way because it contains all children
 }
 
-MyOctant::MyOctant(uint a_nMaxLevel = 2, uint a_nIdealEntityCount = 5)
+MyOctant::MyOctant(uint a_nIdealEntityCount, vector3 a_v3Center, float a_fSize)
 {
-	this->m_uMaxLevel = a_nMaxLevel;
-	this->m_uIdealEntityCount = a_nIdealEntityCount;
-}
 
-MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
-{
-	
 }
 
 void MyOctant::SetModelMatrix(matrix4 a_m4ModelMatrix)
@@ -75,7 +68,7 @@ void MyOctant::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	//set global mins and maxs to be correct
 	for (uint i = 0; i < m_EntityManager->GetEntityCount; ++i)
 	{
-		if (m_v3Max.x < v3Corner[i].x)
+		if (m_v3Max.x < m_EntityManager->GetEntityIndex(i+""))
 		{
 			m_v3Max.x = v3Corner[i].x;
 		}
@@ -117,9 +110,9 @@ float MyOctant::GetSize()
 	return m_fSize;
 }
 
-float MyOctant::SetSize(float size)
+void MyOctant::SetSize(float size)
 {
-	this->m_fSize = size;
+	//this->m_fSize = size;
 }
 
 void MyOctant::Subdivide()
@@ -176,13 +169,5 @@ uint MyOctant::GetOctantCount()
 
 void MyOctant::Display(uint a_nIndex, vector3 a_v3Color)
 {
-	//AddWireCubeToRenderList(glm::translate(m_v3Center) * glm::scale(m_fSize), a_v3Color);
-}
-
-void MyOctant::Display(vector3 a_v3Color)
-{
-}
-
-void MyOctant::DisplayLeafs(vector3 a_v3Color)
-{
+	//m_MeshManager->AddWireCubeToRenderList(glm::translate(m_v3Center) * m_fSize), a_v3Color);
 }

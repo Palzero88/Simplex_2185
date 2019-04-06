@@ -1,5 +1,6 @@
 #pragma once
 #include "MyEntityManager.h"
+#include "AppClass.h"
 
 namespace Simplex
 {
@@ -32,12 +33,11 @@ class MyOctant
 	matrix4 m_m4ToWorld = IDENTITY_M4; //Matrix that will take us from local to world coordinate
 
 	MyEntityManager* m_EntityManager = nullptr;
+	MeshManager* m_MeshManager = nullptr;
+
 public:
 	//constructor for root node
-	MyOctant(uint a_nMaxLevel = 2, uint a_nIdealEntityCount = 5);
-
-	//constructor for child nodes of root and children of their children
-	MyOctant(vector3 a_v3Center, float a_fSize);
+	MyOctant(uint a_nIdealEntityCount, vector3 a_v3Center, float a_fSize);
 
 	//sets model matrix like an arbb
 	void MyOctant::SetModelMatrix(matrix4 a_m4ModelMatrix);
@@ -46,7 +46,7 @@ public:
 	float GetSize(void);
 	
 	//sets size
-	float MyOctant::SetSize(float size);
+	void MyOctant::SetSize(float size);
 
 	//creates 8 octants internally within the parent octant.
 	void Subdivide(void);
@@ -81,8 +81,7 @@ public:
 
 	//displays octant on screen based on index or not
 	void Display(uint a_nIndex, vector3 a_v3Color = C_YELLOW);
-	void Display(vector3 a_v3Color = C_YELLOW);
-	void DisplayLeafs(vector3 a_v3Color = C_YELLOW);
+	
 private:
 	//initializing variables
 	void Init(void);

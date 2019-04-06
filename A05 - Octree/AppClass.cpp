@@ -1,4 +1,5 @@
 #include "AppClass.h"
+#include "MyOctant.h"
 using namespace Simplex;
 void Application::InitVariables(void)
 {
@@ -29,6 +30,8 @@ void Application::InitVariables(void)
 			m_pEntityMngr->SetModelMatrix(m4Position);
 		}
 	}
+	//m_pRoot->SetSize(10.0f);
+	//m_pRoot->AssignIDtoEntity(0);
 	m_uOctantLevels = 1;
 	m_pEntityMngr->Update();
 }
@@ -55,7 +58,7 @@ void Application::Display(void)
 	ClearScreen();
 
 	//display octree
-	//m_pRoot->Display();
+	//m_pRoot->Display(0, C_YELLOW);
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
