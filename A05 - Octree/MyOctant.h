@@ -27,6 +27,11 @@ class MyOctant
 	MyOctant* m_pRoot = nullptr;//Root octant, this is the firs one that was created
 	std::vector<MyOctant*> m_lChild; //list of nodes that contain objects only the root will have this in a useful way because it contains all children
 
+	vector3 m_v3HalfWidth = ZERO_V3; //half the size of octant
+
+	matrix4 m_m4ToWorld = IDENTITY_M4; //Matrix that will take us from local to world coordinate
+
+	MyEntityManager* m_EntityManager = nullptr;
 public:
 	//constructor for root node
 	MyOctant(uint a_nMaxLevel = 2, uint a_nIdealEntityCount = 5);
@@ -34,8 +39,14 @@ public:
 	//constructor for child nodes of root and children of their children
 	MyOctant(vector3 a_v3Center, float a_fSize);
 
+	//sets model matrix like an arbb
+	void MyOctant::SetModelMatrix(matrix4 a_m4ModelMatrix);
+
 	//returns size of one length of an octant
 	float GetSize(void);
+	
+	//sets size
+	float MyOctant::SetSize(float size);
 
 	//creates 8 octants internally within the parent octant.
 	void Subdivide(void);
@@ -72,5 +83,8 @@ public:
 	void Display(uint a_nIndex, vector3 a_v3Color = C_YELLOW);
 	void Display(vector3 a_v3Color = C_YELLOW);
 	void DisplayLeafs(vector3 a_v3Color = C_YELLOW);
+private:
+	//initializing variables
+	void Init(void);
 };
 }
