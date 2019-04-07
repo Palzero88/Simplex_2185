@@ -32,8 +32,8 @@ class MyOctant
 
 	matrix4 m_m4ToWorld = IDENTITY_M4; //Matrix that will take us from local to world coordinate
 
-	MyEntityManager* m_EntityManager = nullptr;
-	MeshManager* m_MeshManager = nullptr;
+	MyEntityManager* m_EntityManager;
+	MeshManager* m_MeshManager;
 
 public:
 	//constructor for root node
@@ -80,7 +80,7 @@ public:
 	uint GetOctantCount(void);
 
 	//displays octant on screen based on index or not
-	void Display(uint a_nIndex, vector3 a_v3Color = C_YELLOW);
+	void Display(vector3 a_v3Color = C_YELLOW);
 	
 private:
 	//initializing variables

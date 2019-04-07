@@ -65,43 +65,44 @@ void MyOctant::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	//set them to zero
 	m_v3Max = m_v3Min = v3Corner[0];
 
-	//set global mins and maxs to be correct
-	for (uint i = 0; i < m_EntityManager->GetEntityCount; ++i)
+	//set global mins and maxs to be correct and define size of octant
+	for (uint i = 0; i < m_EntityManager->GetEntityCount(); ++i)
 	{
-		if (m_v3Max.x < m_EntityManager->GetEntityIndex(i+""))
+		if (m_v3Max.x < m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().x)
 		{
-			m_v3Max.x = v3Corner[i].x;
+			m_v3Max.x = m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().x;
 		}
 
-		if (m_v3Min.x > v3Corner[i].x)
+		if (m_v3Min.x > m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().x)
 		{
-			m_v3Min.x = v3Corner[i].x;
+			m_v3Min.x = m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().x;
 		}
 
-		if (m_v3Max.y < v3Corner[i].y)
+		if (m_v3Max.y < m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().y)
 		{
-			m_v3Max.y = v3Corner[i].y;
+			m_v3Max.y = m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().y;
 		}
 
-		if (m_v3Min.y > v3Corner[i].y)
+		if (m_v3Min.y > m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().y)
 		{
-			m_v3Min.y = v3Corner[i].y;
+			m_v3Min.y = m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().y;
 		}
 
-		if (m_v3Max.z < v3Corner[i].z)
+		if (m_v3Max.z < m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().z)
 		{
-			m_v3Max.z = v3Corner[i].z;
+			m_v3Max.z = m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().z;
 		}
 
-		if (m_v3Min.z > v3Corner[i].z)
+		if (m_v3Min.z > m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().z)
 		{
-			m_v3Min.z = v3Corner[i].z;
+			m_v3Min.z = m_EntityManager->GetRigidBody(m_EntityManager->GetEntityIndex(m_EntityManager->GetUniqueID(i)))->GetMaxGlobal().z;
 		}
 	}
 	//----------------------------------------
 
 	//we calculate the distance between min and max vectors
 	m_fSize = m_v3Max.x - m_v3Min.x;
+	m_v3Center = vector3((m_v3Max.x + m_v3Min.x) / 2);
 	this->SetSize(m_fSize);
 }
 
@@ -112,12 +113,15 @@ float MyOctant::GetSize()
 
 void MyOctant::SetSize(float size)
 {
-	//this->m_fSize = size;
+	this->m_fSize = size;
 }
 
 void MyOctant::Subdivide()
 {
+	for (int i = 0; i < 8; i++)
+	{
 
+	}
 }
 
 void MyOctant::ClearEntityList()
@@ -167,7 +171,7 @@ uint MyOctant::GetOctantCount()
 	return uint();
 }
 
-void MyOctant::Display(uint a_nIndex, vector3 a_v3Color)
+void MyOctant::Display(vector3 a_v3Color)
 {
-	//m_MeshManager->AddWireCubeToRenderList(glm::translate(m_v3Center) * m_fSize), a_v3Color);
+	//m_MeshManager->AddWireCubeToRenderList(glm::translate(vector3(0.0f) * m_v3Center) * glm::scale(vector3(this->m_fSize)), C_YELLOW);
 }

@@ -30,8 +30,7 @@ void Application::InitVariables(void)
 			m_pEntityMngr->SetModelMatrix(m4Position);
 		}
 	}
-	//m_pRoot->SetSize(10.0f);
-	//m_pRoot->AssignIDtoEntity(0);
+	m_pRoot = new MyOctant(5, vector3(0.0f), 30.0f);
 	m_uOctantLevels = 1;
 	m_pEntityMngr->Update();
 }
@@ -58,7 +57,7 @@ void Application::Display(void)
 	ClearScreen();
 
 	//display octree
-	//m_pRoot->Display(0, C_YELLOW);
+	m_pRoot->Display(C_YELLOW);
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
